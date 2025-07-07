@@ -60,8 +60,7 @@ python rpi_sensor_post/read_weight.py
 
 # 데이터베이스 수동 접속 (선택)
 
-docker exec -it cat-feeder-db mysql -u root -p
-## password: root
+docker exec -it cat-feeder-db mysql -u root -p <br> # password: root
 
 # 앞으로 수행 또는 해결해야할 점
 
