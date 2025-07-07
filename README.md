@@ -2,18 +2,31 @@
 # 프로젝트 구조 요약
 
 cat_feeder_server-main/
+
 ├── Dockerfile
+
 ├── docker-compose.yml
+
 ├── requirements.txt
+
 ├── README.md
+
 ├── app/
+
 │   ├── main.py              ← FastAPI 실행 진입점
+
 │   ├── database.py          ← DB 연결 설정
+
 │   ├── models.py            ← SQLAlchemy 모델 정의
+
 │   ├── schemas.py           ← Pydantic 스키마 정의
+
 │   └── routers/
+
 │       └── feeding.py       ← feeding 관련 API 라우터
+
 ├── rpi_sensor_post/
+
 │   └── read_weight.py       ← 라즈베리파이 센서 데이터 전송 코드
 
 # 의존성 설치
