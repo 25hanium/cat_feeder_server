@@ -48,6 +48,7 @@ docker-compose up --build
 
 API가 정상 작동하면 브라우저에서 다음 주소로 접속하여 Swagger 문서를 확인할 수 있습니다:
 http://localhost:8000/docs
+
 추가적으로 외부에서 접속 방법으로
 http://<서버의 IP>:8000/docs 접속 (현재: http://192.168.0.6:8000/docs)
 
