@@ -65,5 +65,12 @@ python rpi_sensor_post/read_weight.py
 
 # 데이터베이스 수동 접속 (선택)
 
+로컬로 할 땐
+
 docker exec -it cat-feeder-db mysql -u root -p <br> # password: root
+
+AWS RDS로 할 땐
+
+mysql -h my-hanium-db.ct8466ykusoj.ap-southeast-2.rds.amazonaws.com -P 3306 -u admin -p <br> # password: hanium2025
+
 
