@@ -3,7 +3,7 @@ import pymysql
 # RDS 접속 정보 입력
 host = "my-hanium-db.ct8466ykusoj.ap-southeast-2.rds.amazonaws.com"
 user = "admin"
-password = "hanium2025"  # 👈 실제 비밀번호로 바꿔주세요
+password = "hanium2025"  
 port = 3306
 db_name = "cat_feeder"
 
