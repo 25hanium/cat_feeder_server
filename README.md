@@ -15,6 +15,8 @@ cat_feeder_server-main/
 
 │   ├── main.py              ← FastAPI 실행 진입점
 
+│   ├── create_db.py         ← AWS RDS 에 데이터베이스 생성
+
 │   ├── database.py          ← DB 연결 설정
 
 │   ├── models.py            ← SQLAlchemy 모델 정의
