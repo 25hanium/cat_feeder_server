@@ -67,7 +67,3 @@ python rpi_sensor_post/read_weight.py
 
 docker exec -it cat-feeder-db mysql -u root -p <br> # password: root
 
-# 앞으로 수행 또는 해결해야할 점
-
-현재 제 컴퓨터의 이상인지 아니면 또다른 문제인지 모르겠으나 데이터베이스에 접속이 안되는 중 추가적으로 진행할 예정 <br>
-라즈베리파이의 스크립트가 정상적으로 전송되는지 확인 (수요일에 확인할 예정)
