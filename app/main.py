@@ -1,27 +1,42 @@
-from fastapi import FastAPI
-from .database import Base, engine
-from .routers import feeding
-
-Base.metadata.create_all(bind=engine)
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+from .database import SessionLocal, engine
+from .models import SensorData
+from .schemas import SensorDataCreate, SensorDataResponse
+import os
+import json
 
 app = FastAPI()
+SensorData.metadata.create_all(bind=engine)
 
-app.include_router(feeding.router, prefix="/feeding", tags=["Feeding"])
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
-@app.post("/api/logs", response_model=schemas.FeedingLogResponse)
-def create_log(log: schemas.FeedingLogCreate, db: Session = Depends(get_db)):
-    return crud.create_log(db, log)
+LOG_FILE = "feeding_log.json"
 
-@app.get("/api/logs/latest", response_model=schemas.FeedingLogResponse)
-def latest_log(db: Session = Depends(get_db)):
-    return crud.get_latest_log(db)
+@app.post("/log", response_model=SensorDataResponse)
+def create_log(data: SensorDataCreate, db: Session = Depends(get_db)):
+    # 저장
+    db_data = SensorData(**data.dict())
+    db.add(db_data)
+    db.commit()
+    db.refresh(db_data)
 
-@app.post("/log")
-async def log_feeding(data: FeedingLog):
-    # 여기에 DB 저장 로직 삽입 가능
-    print(f"✅ Received data from RPi: {data}")
+    # JSON 로그
+    logs = []
+    if os.path.exists(LOG_FILE):
+        with open(LOG_FILE, "r") as f:
+            logs = json.load(f)
+    logs.append(data.dict())
+    with open(LOG_FILE, "w") as f:
+        json.dump(logs, f, indent=2, ensure_ascii=False)
 
-    # 예시: DB 저장 함수
-    # insert_log_to_db(data.cat_id, data.feeding_time, data.food_amount, data.behavior_notes)
+    return db_data
 
-    return {"status": "ok", "message": "Feeding log stored successfully", "data": data}
+@app.get("/log", response_model=list[SensorDataResponse])
+def get_logs(db: Session = Depends(get_db)):
+    return db.query(SensorData).order_by(SensorData.id.desc()).all()
