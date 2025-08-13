@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from hx711 import HX711
 
 load_dotenv()
-SERVER_IP = os.getenv("FASTAPI_SERVER_IP")
+SERVER_IP = os.getenv("3.27.174.25")
 CAT_ID = int(os.getenv("CAT_ID", 1))
 LOG_PATH = os.getenv("RPI_LOG_PATH", "/home/pi/feeding_logs")
 os.makedirs(LOG_PATH, exist_ok=True)
@@ -21,7 +21,7 @@ def read_weight():
 
 def send_to_api(payload):
     try:
-        res = requests.post(f"http://{SERVER_IP}:8000/log", json=payload)
+        res = requests.post(f"http://3.27.174.25:8000/log", json=payload)
         print("API Response:", res.status_code, res.text)
         return res.status_code == 200
     except Exception as e:
