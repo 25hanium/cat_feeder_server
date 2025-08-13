@@ -1,29 +1,14 @@
 services:
-  db:
-    image: mysql:8.0
-    container_name: cat-feeder-db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: cat_feeder
-      MYSQL_USER: user
-      MYSQL_PASSWORD: password
-    ports:
-      - "3306:3306"
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   api:
     build: .
     container_name: cat-feeder-api
     ports:
       - "8000:8000"
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     environment:
       DB_HOST: my-hanium-db.ct8466ykusoj.ap-southeast-2.rds.amazonaws.com # AWS RDS 엔드포인트
       DB_PORT: 3306
       DB_USER: admin
       DB_PASSWORD: hanium2025
       DB_NAME: cat_feeder
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: always
