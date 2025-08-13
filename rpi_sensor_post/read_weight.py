@@ -1,12 +1,12 @@
-
-import time
-import requests
-import datetime
+import time, os, json, requests, datetime
+from dotenv import load_dotenv
 from hx711 import HX711
 
 load_dotenv()
-SERVER_IP = os.getenv("FASTAPI_SERVER_IP", "localhost")    //fast_server api 설정해야 함
+SERVER_IP = os.getenv("FASTAPI_SERVER_IP")
 CAT_ID = int(os.getenv("CAT_ID", 1))
+LOG_PATH = os.getenv("RPI_LOG_PATH", "/home/pi/feeding_logs")
+os.makedirs(LOG_PATH, exist_ok=True)
 
 hx = HX711(dout_pin=5, pd_sck_pin=6)
 hx.zero()
@@ -14,34 +14,35 @@ hx.set_scale_ratio(200)
 
 def read_weight():
     try:
-        weight = hx.get_weight_mean(20)
-        print("측정 무게:", weight, "g")
-        return weight
+        return hx.get_weight_mean(20)
     except Exception as e:
-        print("무게 측정 실패:", e)
+        print("Weight read error:", e)
         return None
 
-def send_to_api(weight):
-    url = f"http://{SERVER_IP}:8000/log"
-    payload = {
-        "cat_id": CAT_ID,
-        "feeding_time": datetime.datetime.now().isoformat(),
-        "food_amount": weight,
-        "behavior_notes": "정상 급식"
-    }
+def send_to_api(payload):
     try:
-        response = requests.post(url, json=payload)
-        if response.status_code == 200:
-            print("데이터 전송 성공")
-            print("서버 응답:", response.json())
-        else:
-            print("전송 실패:", response.status_code, response.text)
+        res = requests.post(f"http://{SERVER_IP}:8000/log", json=payload)
+        print("API Response:", res.status_code, res.text)
+        return res.status_code == 200
     except Exception as e:
-        print("API 전송 에러:", e)
+        print("Send error:", e)
+        return False
+
+def log_to_file(payload):
+    filepath = os.path.join(LOG_PATH, f"log_{datetime.date.today()}.jsonl")
+    with open(filepath, "a") as f:
+        f.write(json.dumps(payload, ensure_ascii=False) + "\n")
 
 if __name__ == "__main__":
     while True:
         weight = read_weight()
-        if weight:
-            send_to_api(weight)
+        if weight is not None:
+            payload = {
+                "cat_id": CAT_ID,
+                "feeding_time": datetime.datetime.now().isoformat(),
+                "food_amount": weight,
+                "behavior_notes": "정상 급식"
+            }
+            if not send_to_api(payload):
+                log_to_file(payload)
         time.sleep(60)
