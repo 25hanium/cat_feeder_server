@@ -17,3 +17,15 @@ class FeedingLogResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class SensorDataCreate(BaseModel):
+    tag_id: str
+    weight: float
+
+class SensorDataResponse(BaseModel):
+    id: int
+    tag_id: str
+    weight: float
+
+    class Config:
+        orm_mode = True
